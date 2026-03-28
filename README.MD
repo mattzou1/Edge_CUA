@@ -8,7 +8,7 @@ An AI agent that controls a desktop VM. You give it a task in plain English; it 
 
 - **GPU:** NVIDIA GeForce RTX 3050 or similar (for vllm inference)
 - **RAM:** 16 GB or more
-- **OS:** Ubuntu Linux 22.04 (host)
+- **OS:** Ubuntu Linux 22.04 (host) or WSL2 on Windows
 
 ## How it works
 
@@ -23,15 +23,20 @@ An AI agent that controls a desktop VM. You give it a task in plain English; it 
 
 ### 1. Install prerequisites
 
-- Docker + Docker Compose
 - Python 3.11+ with [uv](https://github.com/astral-sh/uv)
+- Docker. On WSL2: install Docker Desktop for Windows, enable WSL integration under **Settings → Resources → WSL Integration**, then install the Compose plugin inside WSL:
+  ```bash
+  sudo apt-get install docker-compose-v2
+  ```
 
 ### 2. Clone and install dependencies
 
 ```bash
 git clone https://github.com/mattzou1/Edge_CUA.git
 cd Edge_CUA
-uv pip install -r requirements-uv.txt
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
 ```
 
 ### 3. Download the model
@@ -57,6 +62,7 @@ python3 -c "import socket; socket.create_connection(('localhost', 5900), timeout
 ### 5. Start the server
 
 ```bash
+source .venv/bin/activate
 VNC_HOST=localhost uvicorn server:app --port 8000
 ```
 
@@ -89,5 +95,5 @@ ecua2_agent/
   planner_module/    LLM singleton + generate_step()
   vision_module/     OmniParser (YOLOv8 + OCR) -> UI element list
   controller_module/ vncdotool action dispatch
-tests/               pytest test suite (27 tests)
+tests/               pytest test suite (33 tests)
 ```

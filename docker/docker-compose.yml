@@ -3,7 +3,7 @@ services:
     build: .
     ports:
       - "5900:5900"   # VNC (vncdotool)
-      - "6080:6080"   # noVNC / websockify
+      - "6080:80"     # noVNC web UI (nginx inside container listens on 80)
     volumes:
       - ../screenshots:/screenshots
     environment:

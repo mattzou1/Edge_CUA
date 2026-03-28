@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 *.pyo
 screenshots/*.png
-runs.db
+runs.db*
+.gstack/

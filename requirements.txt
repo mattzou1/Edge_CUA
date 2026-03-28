@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pydantic
+vllm
+vncdotool
+mss
+paddleocr
+ultralytics
+numpy
+opencv-python
+pillow

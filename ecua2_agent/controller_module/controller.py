@@ -5,11 +5,6 @@ import shlex
 import logging
 from typing import List, Optional, Tuple
 
-import pyautogui
-
-# Safety: moving mouse to top-left corner aborts pyautogui automation
-pyautogui.FAILSAFE = True
-
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
@@ -198,6 +193,12 @@ class Controller:
     # ------------------------------------------------------------------
 
     @staticmethod
+    def _get_pyautogui():
+        import pyautogui  # noqa: PLC0415 — lazy import, requires a display
+        pyautogui.FAILSAFE = True
+        return pyautogui
+
+    @staticmethod
     def _parse_line(line: str) -> Tuple[str, List[str]]:
         tokens = shlex.split(line)
         if not tokens:
@@ -226,9 +227,10 @@ class Controller:
         if len(args) != 2:
             raise ControllerError("MOVE_TO requires exactly 2 arguments: x y")
         x, y = self._parse_int_pair(args)
-        pyautogui.moveTo(x, y)
+        self._get_pyautogui().moveTo(x, y)
 
     def _click(self, args):
+        pg = self._get_pyautogui()
         button = "left"
         x = y = None
         clicks = 1
@@ -248,77 +250,81 @@ class Controller:
             except ValueError:
                 raise ControllerError(f"Invalid num_clicks: {args[idx]}")
         if x is None or y is None:
-            pyautogui.click(button=button, clicks=clicks)
+            pg.click(button=button, clicks=clicks)
         else:
-            pyautogui.click(x=x, y=y, button=button, clicks=clicks)
+            pg.click(x=x, y=y, button=button, clicks=clicks)
 
     def _mouse_down(self, args):
-        pyautogui.mouseDown(button=self._parse_button(args[0] if args else None))
+        self._get_pyautogui().mouseDown(button=self._parse_button(args[0] if args else None))
 
     def _mouse_up(self, args):
-        pyautogui.mouseUp(button=self._parse_button(args[0] if args else None))
+        self._get_pyautogui().mouseUp(button=self._parse_button(args[0] if args else None))
 
     def _right_click(self, args):
+        pg = self._get_pyautogui()
         x = y = None
         if len(args) >= 2:
             x, y = self._parse_int_pair(args)
         if x is None:
-            pyautogui.click(button="right")
+            pg.click(button="right")
         else:
-            pyautogui.click(x=x, y=y, button="right")
+            pg.click(x=x, y=y, button="right")
 
     def _double_click(self, args):
+        pg = self._get_pyautogui()
         x = y = None
         if len(args) >= 2:
             x, y = self._parse_int_pair(args)
         if x is None:
-            pyautogui.click(clicks=2)
+            pg.click(clicks=2)
         else:
-            pyautogui.click(x=x, y=y, clicks=2)
+            pg.click(x=x, y=y, clicks=2)
 
     def _drag_to(self, args):
         if len(args) != 2:
             raise ControllerError("DRAG_TO requires exactly 2 arguments: x y")
         x, y = self._parse_int_pair(args)
-        pyautogui.dragTo(x, y, button="left")
+        self._get_pyautogui().dragTo(x, y, button="left")
 
     def _scroll(self, args):
         if len(args) != 2:
             raise ControllerError("SCROLL requires exactly 2 arguments: dx dy")
+        pg = self._get_pyautogui()
         dx, dy = self._parse_int_pair(args)
         if dy != 0:
-            pyautogui.scroll(dy)
-        if dx != 0 and hasattr(pyautogui, "hscroll"):
-            pyautogui.hscroll(dx)
+            pg.scroll(dy)
+        if dx != 0 and hasattr(pg, "hscroll"):
+            pg.hscroll(dx)
 
     def _typing(self, args):
         if not args:
             raise ControllerError("TYPING requires a text argument")
-        pyautogui.typewrite(" ".join(args))
+        self._get_pyautogui().typewrite(" ".join(args))
 
     def _press(self, args):
         if len(args) != 1:
             raise ControllerError("PRESS requires exactly 1 key")
-        pyautogui.press(args[0])
+        self._get_pyautogui().press(args[0])
 
     def _key_down(self, args):
         if len(args) != 1:
             raise ControllerError("KEY_DOWN requires exactly 1 key")
-        pyautogui.keyDown(args[0])
+        self._get_pyautogui().keyDown(args[0])
 
     def _key_up(self, args):
         if len(args) != 1:
             raise ControllerError("KEY_UP requires exactly 1 key")
-        pyautogui.keyUp(args[0])
+        self._get_pyautogui().keyUp(args[0])
 
     def _hotkey(self, args):
         if not args:
             raise ControllerError("HOTKEY requires at least one key")
+        pg = self._get_pyautogui()
         keys = args[0].split("+") if len(args) == 1 else args
         keys = [k.strip() for k in keys if k.strip()]
         if not keys:
             raise ControllerError("HOTKEY parsed empty key list")
-        pyautogui.hotkey(*keys)
+        pg.hotkey(*keys)
 
     def _wait(self, args):
         if args:
