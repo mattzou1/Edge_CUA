@@ -73,7 +73,7 @@ Example tasks:
 ## Running tests
 
 ```bash
-uvx pytest tests/test_state.py tests/test_db.py tests/test_controller.py -v
+uvx --with fastapi --with httpx pytest tests/ -v
 ```
 
 ## Project structure

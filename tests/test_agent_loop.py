@@ -7,7 +7,9 @@ from unittest.mock import MagicMock, patch, call
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-# Stub vncdotool before import
+# Stub GPU, display, and VNC deps before any project import
+sys.modules.setdefault("vllm", MagicMock())
+sys.modules.setdefault("pyautogui", MagicMock())
 vnc_mock = MagicMock()
 sys.modules.setdefault("vncdotool", vnc_mock)
 sys.modules.setdefault("vncdotool.api", vnc_mock)
