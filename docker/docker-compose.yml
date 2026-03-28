@@ -1,0 +1,11 @@
+services:
+  desktop:
+    build: .
+    ports:
+      - "5900:5900"   # VNC (vncdotool)
+      - "6080:6080"   # noVNC / websockify
+    volumes:
+      - ../screenshots:/screenshots
+    environment:
+      - RESOLUTION=1280x800
+    restart: unless-stopped

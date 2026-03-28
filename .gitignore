@@ -1,1 +1,6 @@
 models/
+__pycache__/
+*.pyc
+*.pyo
+screenshots/*.png
+runs.db
