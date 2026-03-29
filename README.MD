@@ -1,5 +1,3 @@
-![ECUA](./images/AI_Agent.png)
-
 # ECUA — Edge Computer Use Agent
 
 An AI agent that controls a desktop VM. You give it a task in plain English; it uses a vision model (OmniParser) to read the screen, a local LLM (Llama 3.2-1B via vllm) to decide what to do, and vncdotool to click/type/press keys — all running inside a Docker container.
@@ -75,6 +73,19 @@ Visit `http://localhost:8000`. Type a task and click Run.
 Example tasks:
 - `open terminal and type top`
 - `open LibreOffice Writer and type Hello World`
+
+## Shutting down
+
+```bash
+cd docker
+docker compose down
+```
+
+To also free the disk space used by the image:
+
+```bash
+docker rmi docker-desktop
+```
 
 ## Running tests
 
